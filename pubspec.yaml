@@ -1,0 +1,42 @@
+name: azkary
+description: A Flutter package for Islamic Azkar. Load Azkar categories, Handle azkar progress, downloading audios and automatic sabah/masaa resets. Zero configuration required.
+version: 0.0.1
+homepage: https://github.com/emadbeltaje/azkary
+repository: https://github.com/EmadBeltaje/azkary
+documentation: https://github.com/EmadBeltaje/azkary#readme
+issue_tracker: https://github.com/EmadBeltaje/azkary/issues
+topics:
+  - flutter
+  - islamic
+  - azkar
+  - pray
+  - dua
+
+environment:
+  sdk: ">=3.0.0 <4.0.0"
+  flutter: ">=3.10.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  audio_session: ^0.2.3
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
+  clock: ^1.1.2
+  dio: ^5.9.2
+  just_audio: ^0.10.5
+  path: ^1.9.1
+  path_provider: ^2.1.5
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+  hive_generator: ^2.0.1
+  build_runner: ^2.4.13
+  mockito: ">=5.4.0 <5.5.1"
+  fake_async: ^1.3.3
+
+flutter:
+  assets:
+    - assets/json/azkar.json
