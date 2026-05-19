@@ -1,6 +1,6 @@
 name: azkary
 description: A Flutter package for Islamic Azkar. Load Azkar categories, Handle azkar progress, downloading audios and automatic sabah/masaa resets. Zero configuration required.
-version: 0.0.1
+version: 0.0.2
 homepage: https://github.com/emadbeltaje/azkary
 repository: https://github.com/EmadBeltaje/azkary
 documentation: https://github.com/EmadBeltaje/azkary#readme
