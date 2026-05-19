@@ -13,6 +13,7 @@ This package allow you to display, download and play Azkar on your app in the mo
 - Auto-reset Sabah & Masaa Azkar based on user timezone. 🔄
 - Download single or all Azkar audio files with progress. 🔈
 - Full audio playback (play, pause, resume, seek, stop). 🎵
+- Playback streams for UI: current item, position, and duration. 📡
 - Unified error handling via `AzkaryException` ⚠️
 
 ---
@@ -21,7 +22,7 @@ This package allow you to display, download and play Azkar on your app in the mo
 
 1. Add **`azkary`** to your app’s `pubspec.yaml` dependencies.
 ```yaml
-azkary: 0.0.1
+azkary: 0.0.2
 ```
 
 2. Initialize the package
@@ -140,7 +141,31 @@ Azkary.instance.resumeAudio();
 Azkary.instance.stopAudio();
 
 /// move forward or backward using slider
-Azkary.instance.seek(Duration(minute: 1));
+Azkary.instance.seek(Duration(minutes: 1));
+```
+
+---
+
+### Playback streams 📡
+```dart
+/// which zekr is playing + state (playing, paused, loading...)
+/// null when nothing is playing
+Azkary.instance.currentPlaybackStream.listen((playback) {
+  var categoryId = playback?.categoryId;
+  var zekrId = playback?.zekrId;
+  var state = playback?.state;
+});
+
+/// current position — use for seek slider
+Azkary.instance.positionStream.listen((position) {
+  var seconds = position.inSeconds;
+});
+
+/// total length of the audio file
+Azkary.instance.durationStream.listen((duration) {
+  // update when you play another zekr
+  var totalSeconds = duration?.inSeconds;
+});
 ```
 
 ---
