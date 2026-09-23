@@ -34,6 +34,7 @@ import 'domain/usecases/play_audio_usecase.dart';
 import 'domain/usecases/reset_category_usecase.dart';
 import 'domain/usecases/reset_zekr_usecase.dart';
 
+/// Loads categories, updates Zekr progress, and controls audio downloads and playback.
 class AzkaryService {
   const AzkaryService._({
     required LoadAzkarUseCase loadAzkar,
@@ -75,20 +76,31 @@ class AzkaryService {
   final IsAudioDownloadedUseCase _isAudioDownloaded;
   final PlayAudioUseCase _playAudio;
 
+  /// Loads every category and applies Sabah and Masaa auto-reset.
   Future<List<ZekrCategory>> getCategories() async {
     final categories = await _loadAzkar();
     return _autoReset(categories);
   }
 
+  /// Increases the progress of the Zekr identified by [zekrId] by one.
+  ///
+  /// Returns the updated [category]. Progress stops at that Zekr's required count.
   Future<ZekrCategory> incrementZekr(ZekrCategory category, int zekrId) =>
       _incrementZekr(category, zekrId);
 
+  /// Sets the progress of the Zekr identified by [zekrId] back to zero.
+  ///
+  /// Returns the updated [category].
   Future<ZekrCategory> resetZekr(ZekrCategory category, int zekrId) =>
       _resetZekr(category, zekrId);
 
+  /// Sets every Zekr in the category identified by [categoryId] back to zero.
   Future<void> resetCategory(int categoryId) =>
       _resetCategory(categoryId);
 
+  /// Downloads the audio file for one Zekr.
+  ///
+  /// [onProgress] receives byte counts while the file transfers.
   Future<void> downloadZekrAudio({
     required int categoryId,
     required int zekrId,
@@ -103,11 +115,17 @@ class AzkaryService {
   // }) =>
   //     _downloadCategory(categoryId, onProgress: onProgress);
 
+  /// Downloads every Zekr audio file that is not already stored locally.
+  ///
+  /// [onProgress] reports how many files are finished and the current file.
   Future<void> downloadAllAudios({
     AllAudiosDownloadProgressCallback? onProgress,
   }) =>
       _downloadAll(onProgress: onProgress);
 
+  /// Cancels an in-flight download for one Zekr.
+  ///
+  /// Returns whether a download for that Zekr was running.
   Future<bool> cancelZekrDownload({
     required int categoryId,
     required int zekrId,
@@ -118,17 +136,23 @@ class AzkaryService {
   // Future<bool> cancelCategoryDownload({required int categoryId}) =>
   //     _cancelDownload.category(categoryId);
 
+  /// Cancels every in-flight download and returns how many were stopped.
   Future<int> cancelAllDownloads() => _cancelDownload.all();
 
+  /// Whether the audio file for one Zekr is already on disk.
   Future<bool> isZekrAudioDownloaded({
     required int categoryId,
     required int zekrId,
   }) =>
       _isAudioDownloaded.zekr(categoryId, zekrId);
 
+  /// Whether every audio file in the category identified by [categoryId] is on disk.
   Future<bool> isCategoryAudioDownloaded(int categoryId) =>
       _isAudioDownloaded.category(categoryId);
 
+  /// Plays the downloaded audio for one Zekr.
+  ///
+  /// Throws an [AudioNotDownloadedException] when the file is not on disk.
   Future<void> playZekrAudio({
     required int categoryId,
     required int zekrId,
@@ -139,23 +163,29 @@ class AzkaryService {
   // Future<void> playCategoryAudio(int categoryId) =>
   //     _playAudio.category(categoryId);
 
+  /// Pauses the current audio.
   Future<void> pauseAudio() => _playAudio.pause();
 
+  /// Resumes audio paused by [pauseAudio].
   Future<void> resumeAudio() => _playAudio.resume();
 
+  /// Moves playback to [position].
   Future<void> seekAudio(Duration position) => _playAudio.seek(position);
 
+  /// Stops playback and clears the current item.
   Future<void> stopAudio() => _playAudio.stop();
 
+  /// The item currently loaded in the player, or `null` when nothing is loaded.
   Stream<CurrentPlayback?> get currentPlaybackStream =>
       _audio.currentPlaybackStream;
 
+  /// The playback position of the current item.
   Stream<Duration> get positionStream => _audio.positionStream;
 
+  /// The length of the current item, or `null` until the player knows it.
   Stream<Duration?> get durationStream => _audio.durationStream;
 
-  /// stops playback, cancels downloads, closes playback streams, and releases
-  /// the audio player.
+  /// Stops playback, cancels downloads, and releases the audio player.
   Future<void> dispose() => _audio.dispose();
 
   static Future<AzkaryService> create() async {

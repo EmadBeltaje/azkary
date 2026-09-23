@@ -2,12 +2,15 @@ import 'core/constants/package_constants.dart';
 import 'core/errors/azkary_exception.dart';
 import 'azkary_service.dart';
 
+/// Entry point for loading Azkar, tracking progress, and playing audio.
 abstract final class Azkary {
   static AzkaryService? _instance;
   static AzkaryException? _lastError;
 
-  /// access the service methods after [initialize] returns true.
-  /// throws [NotInitializedException] if called before a successful initialization.
+  /// The initialized service.
+  ///
+  /// Throws a [NotInitializedException] when [initialize] has not completed
+  /// successfully.
   static AzkaryService get instance {
     if (_instance == null) {
       throw const NotInitializedException();
@@ -15,11 +18,14 @@ abstract final class Azkary {
     return _instance!;
   }
 
-  /// the last error from [initialize],
-  /// it will be null if intialize went fine.
+  /// The [AzkaryException] from the last failed [initialize], or `null` after
+  /// a successful initialization.
   static AzkaryException? get lastError => _lastError;
 
-  /// initializes the package fully
+  /// Opens local storage and prepares audio playback.
+  ///
+  /// Returns `true` when [instance] is ready. Rethrows an [AzkaryException]
+  /// and stores it in [lastError] when setup fails.
   static Future<bool> initialize() async {
     try {
       _lastError = null;
@@ -38,12 +44,14 @@ abstract final class Azkary {
     }
   }
 
-  /// Tears down audio (player, streams, running downloads) and clears
-  /// [instance]. Call [initialize] again before using the package again.
+  /// Stops playback, cancels downloads, and clears [instance].
+  ///
+  /// Call [initialize] again before using the package. Does nothing when the
+  /// package is not initialized.
   static Future<void> dispose() async {
     if (_instance == null) return;
+    await _instance!.dispose();
     _instance = null;
     _lastError = null;
-    await _instance!.dispose();
   }
 }

@@ -14,17 +14,18 @@ part 'parse_exception.dart';
 part 'playback_exception.dart';
 part 'storage_exception.dart';
 
-/// base sealed exception. Every Azkary error extends this.
-///
-/// [message]          — what went wrong
-/// [cause]            — error stacktrace
-/// [developerMessage] — formated message show to user with github issues link
+/// Base type for every error thrown by this package.
 sealed class AzkaryException implements Exception {
+  /// Creates an error with [message] and an optional [cause].
   const AzkaryException(this.message, {this.cause});
 
+  /// What went wrong.
   final String message;
+
+  /// The underlying error, when one was caught.
   final Object? cause;
 
+  /// [message] plus [cause] and a link for reporting the failure.
   String get developerMessage => [
         '${PackageConstants.developerMessageOpening}$runtimeType: $message',
         if (cause != null)
